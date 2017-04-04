@@ -15,7 +15,6 @@ using ChatBot.Infrastructure.Mappings;
 using ChatBot.Service;
 using ChatBot.Service.Abstract;
 using Newtonsoft.Json.Serialization;
-using IMembershipService = ChatBot.Service.IMembershipService;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
