@@ -82,11 +82,29 @@ namespace ChatBot.Controllers
         }
         [HttpGet]
         [Route("GetUserById")]
-        public async Task<Users> GetUserById(int userid, string username)
+        public async Task<Users> GetUserById(int? userid, string username)
         {
             DEFACEWEBSITEContext context = new DEFACEWEBSITEContext();
-                var result = await context.Users.FromSql("dbo.Users_ById @p_USERNAME = {0}, @p_USERID = {1}", username, userid).SingleAsync();
-                return result;
+            var result = await context.Users.FromSql("dbo.Users_ById @p_USERNAME = {0}, @p_USERID = {1}", username, userid).SingleAsync();
+            return result;
+        }
+        [HttpPut]
+        [Route("ChangePassword")]
+        public  int ChangePassword(string username, string currentpassword, string newpassword)
+        {
+            DEFACEWEBSITEContext context = new DEFACEWEBSITEContext();
+            var result =  context.Users.FromSql("dbo.Users_ById @p_USERNAME = {0}, @p_USERID = null ", username).Single();
+            if(MD5Encoder.MD5Hash(currentpassword).Equals(result.Password))
+            {
+                result.Password = MD5Encoder.MD5Hash(newpassword);
+                string command = $"dbo.Users_Upd @p_ID={result.Id},@p_USERNAME = '{result.Username}',@p_FULLNAME=N'{result.Fullname}',@p_PASSWORD='{result.Password}',@p_EMAIL = '{result.Email}',@p_PHONE={result.Phone},@p_PARENT_ID='{result.ParentId}',@p_DESCRIPTION=N'{result.Description}',@p_RECORD_STATUS='{result.RecordStatus}',@p_AUTH_STATUS='{result.AuthStatus}',@p_CREATE_DT='{result.CreateDt}',@p_APPROVE_DT='{result.ApproveDt}',@p_EDIT_DT='{DateTime.Now.Date}',@p_MAKER_ID='{result.MakerId}',@p_CHECKER_ID='{result.CheckerId}',@p_EDITOR_ID='{result.EditorId}'";
+                int updResult =  context.Database.ExecuteSqlCommand(command);
+                return updResult;
+            }
+            else
+            {
+                return -1;
+            }
         }
         [HttpPost]
         public  int Post([FromBody]UserObject user)
@@ -150,7 +168,7 @@ namespace ChatBot.Controllers
             user.AuthStatus = "U";
             DEFACEWEBSITEContext context = new DEFACEWEBSITEContext();
             string password = MD5Encoder.MD5Hash(user.Password);
-            string command = $"dbo.Users_Upd @p_ID={user.Id},@p_USERNAME = '{user.Username}',@p_FULLNAME=N'{user.Fullname}',@p_PASSWORD='{password}',@p_EMAIL = '{user.Email}',@p_PHONE={user.Phone},@p_PARENT_ID={user.ParentId},@p_DESCRIPTION=N'{user.Description}',@p_RECORD_STATUS='{user.RecordStatus}',@p_AUTH_STATUS='{user.AuthStatus}',@p_CREATE_DT='{user.CreateDt.Value.Date}',@p_APPROVE_DT='{user.ApproveDt.Value.Date}',@p_EDIT_DT='{DateTime.Now.Date}',@p_MAKER_ID='{user.MakerId}',@p_CHECKER_ID='{user.CheckerId}',@p_EDITOR_ID='{user.EditorId}'";
+            string command = $"dbo.Users_Upd @p_ID={user.Id},@p_USERNAME = '{user.Username}',@p_FULLNAME=N'{user.Fullname}',@p_PASSWORD='{password}',@p_EMAIL = '{user.Email}',@p_PHONE={user.Phone},@p_PARENT_ID={user.ParentId},@p_DESCRIPTION=N'{user.Description}',@p_RECORD_STATUS='{user.RecordStatus}',@p_AUTH_STATUS='{user.AuthStatus}',@p_CREATE_DT='{user.CreateDt}',@p_APPROVE_DT='{user.ApproveDt}',@p_EDIT_DT='{DateTime.Now.Date}',@p_MAKER_ID='{user.MakerId}',@p_CHECKER_ID='{user.CheckerId}',@p_EDITOR_ID='{user.EditorId}'";
             var result = await context.Database.ExecuteSqlCommandAsync(command, cancellationToken: CancellationToken.None);
             return result;
         }

@@ -110,7 +110,7 @@ namespace ChatBot.Controllers
         public async Task<int> Put(int id,[FromBody]ListdomainObject domain)
         {
             DEFACEWEBSITEContext context = new DEFACEWEBSITEContext();
-            string command = $"dbo.Listdomain_Upd @p_ID= {domain.ID},@p_DOMAIN = '{domain.DOMAIN}',@p_USER_ID='{domain.USER_ID}',@p_USERNAME='{domain.USERNAME}',@p_DESCRIPTION = N'{domain.DESCRIPTION}',@p_RECORD_STATUS = '{domain.RECORD_STATUS}',@p_AUTH_STATUS = '{domain.AUTH_STATUS}',@p_CREATE_DT = '{domain.CREATE_DT.Value.Date}',@p_APPROVE_DT = '{domain.APPROVE_DT.Value.Date}',@p_EDIT_DT = '{DateTime.Now.Date}',@p_MAKER_ID = '{domain.MAKER_ID}',@p_CHECKER_ID = '{domain.CHECKER_ID}',@p_EDITOR_ID = '{domain.EDITOR_ID}'";
+            string command = $"dbo.Listdomain_Upd @p_ID= {domain.ID},@p_DOMAIN = '{domain.DOMAIN}',@p_USER_ID='{domain.USER_ID}',@p_USERNAME='{domain.USERNAME}',@p_DESCRIPTION = N'{domain.DESCRIPTION}',@p_RECORD_STATUS = '{domain.RECORD_STATUS}',@p_AUTH_STATUS = '{domain.AUTH_STATUS}',@p_CREATE_DT = '{domain.CREATE_DT}',@p_APPROVE_DT = '{domain.APPROVE_DT}',@p_EDIT_DT = '{DateTime.Now.Date}',@p_MAKER_ID = '{domain.MAKER_ID}',@p_CHECKER_ID = '{domain.CHECKER_ID}',@p_EDITOR_ID = '{domain.EDITOR_ID}'";
             var result = await context.Database.ExecuteSqlCommandAsync(command, cancellationToken: CancellationToken.None);
             return result;
         }
