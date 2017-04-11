@@ -1,19 +1,13 @@
-﻿using System;
+﻿using AutoMapper;
+using ChatBot.Infrastructure.Core;
+using ChatBot.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
-using ChatBot.Data.Infrastructure;
-using ChatBot.Data.Respositories;
-using ChatBot.Infrastructure.Core;
-using ChatBot.Infrastructure.Mappings;
-using ChatBot.Model.Models;
-using ChatBot.Service;
-using ChatBot.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using ChatBot.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,15 +16,15 @@ namespace ChatBot.Controllers
     [Route("api/[controller]")]
     public class DomainsController : Controller
     {
-
-        int _page = 1;
-        int _pageSize = 10;
+        private int _page = 1;
+        private int _pageSize = 10;
         /*
         @USER varchar(15) = NULL,
 	    @DOMAIN varchar(500) = NULL,
 	    @RECORD_STATUS varchar(1) = NULL,
 	    @CREATE_DT varchar(20) = NULL
          */
+
         [HttpGet]
         public async Task<IEnumerable<ListdomainObject>> Get(string userid)
         {
@@ -56,11 +50,9 @@ namespace ChatBot.Controllers
             Response.AddPagination(_page, _pageSize, totalRecord, totalPages);
             IEnumerable<ListdomainObject> listPagedDomain = Mapper.Map<IEnumerable<ListdomainObject>, IEnumerable<ListdomainObject>>(domains);
 
-
             return listPagedDomain;
-
-
         }
+
         [HttpDelete("{id}")]
         public async Task<int> Delete(int id)
         {
@@ -69,6 +61,7 @@ namespace ChatBot.Controllers
             var result = await context.Database.ExecuteSqlCommandAsync(command, cancellationToken: CancellationToken.None);
             return result;
         }
+
         /*
          @p_DOMAIN	varchar(200)  = NULL,
 @p_USER_ID	varchar(15)  = NULL,
@@ -83,6 +76,7 @@ namespace ChatBot.Controllers
 @p_CHECKER_ID	varchar(15)  = NULL,
 @p_EDITOR_ID	varchar(15)  = NULL
          */
+
         [HttpPost]
         public async Task<int> Post([FromBody]ListdomainObject domain)
         {
@@ -91,6 +85,7 @@ namespace ChatBot.Controllers
             var result = await context.Database.ExecuteSqlCommandAsync(command, cancellationToken: CancellationToken.None);
             return result;
         }
+
         /*
          @p_ID	int = NULL,
 @p_DOMAIN	varchar(200) = NULL ,
@@ -104,16 +99,16 @@ namespace ChatBot.Controllers
 @p_EDIT_DT	VARCHAR(20) = NULL,
 @p_MAKER_ID	varchar(15) = NULL ,
 @p_CHECKER_ID	varchar(15) = NULL ,
-@p_EDITOR_ID	varchar(15) = NULL 
+@p_EDITOR_ID	varchar(15) = NULL
          */
+
         [HttpPut("{id}")]
-        public async Task<int> Put(int id,[FromBody]ListdomainObject domain)
+        public async Task<int> Put(int id, [FromBody]ListdomainObject domain)
         {
             DEFACEWEBSITEContext context = new DEFACEWEBSITEContext();
             string command = $"dbo.Listdomain_Upd @p_ID= {domain.ID},@p_DOMAIN = '{domain.DOMAIN}',@p_USER_ID='{domain.USER_ID}',@p_USERNAME='{domain.USERNAME}',@p_DESCRIPTION = N'{domain.DESCRIPTION}',@p_RECORD_STATUS = '{domain.RECORD_STATUS}',@p_AUTH_STATUS = '{domain.AUTH_STATUS}',@p_CREATE_DT = '{domain.CREATE_DT}',@p_APPROVE_DT = '{domain.APPROVE_DT}',@p_EDIT_DT = '{DateTime.Now.Date}',@p_MAKER_ID = '{domain.MAKER_ID}',@p_CHECKER_ID = '{domain.CHECKER_ID}',@p_EDITOR_ID = '{domain.EDITOR_ID}'";
             var result = await context.Database.ExecuteSqlCommandAsync(command, cancellationToken: CancellationToken.None);
             return result;
         }
-
     }
 }
